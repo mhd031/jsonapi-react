@@ -1,4 +1,4 @@
-declare module 'jsonapi-react' {
+declare module 'mhd031/jsonapi-react' {
   interface IPlugin {
     initialize(client: ApiClient): void
   }
@@ -99,10 +99,11 @@ declare module 'jsonapi-react' {
     queryArg: QueryArg,
     config?: {
       cacheTime?: number
+      client?: ApiClient
+      headers?: {}
+      initialData?: TData
       staleTime?: number
       ssr?: boolean
-      client?: ApiClient
-      initialData?: TData
     }
   ): IResult<TData>
 }

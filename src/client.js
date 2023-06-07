@@ -156,6 +156,7 @@ export class ApiClient {
       staleTime = this.config.staleTime,
       headers,
       hydrate,
+      fetch
     } = config
 
     const query = this.getQuery(queryArg)
@@ -190,7 +191,7 @@ export class ApiClient {
       isFetching: true,
     })
 
-    const request = this.request(query.url, { headers })
+    const request = this.request(query.url, { headers, fetch })
 
     query.promise = (async () => {
       query.cache = await request
@@ -288,7 +289,7 @@ export class ApiClient {
           q.cache = null
 
           if (q.subscribers.length) {
-            this.fetch(q, { force: true })
+            this.fetch(q, { force: true, ...options })
           }
         }
       })
@@ -366,20 +367,14 @@ export class ApiClient {
       abort = () => controller.abort()
     }
 
-    const promise = this.config
-      .fetch(uri, options)
+    const fetchFn = options.fetch || this.config.fetch;
+    delete options.fetch;
+
+    const promise = fetchFn(uri, options)
       .then(res => {
         return res.status === 204 ? {} : res.json()
       })
-      .catch(error => {
-        return {
-          error: {
-            status: String(error.code || 500),
-            title: error.message,
-            name: error.name,
-          },
-        }
-      })
+      .catch(error => error)
 
     if (abort) {
       promise.abort = abort
