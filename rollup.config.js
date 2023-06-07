@@ -1,10 +1,10 @@
 import babel from 'rollup-plugin-babel'
 import commonjs from 'rollup-plugin-commonjs'
 import external from 'rollup-plugin-peer-deps-external'
-import resolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import { sizeSnapshot } from 'rollup-plugin-size-snapshot'
 import size from 'rollup-plugin-size'
-import pkg from './package.json'
+import pkg from './package.json' assert { type: 'json' }
 
 export default [
   {
