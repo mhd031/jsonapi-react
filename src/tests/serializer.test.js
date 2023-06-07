@@ -28,9 +28,7 @@ describe('serialize', () => {
         id: 2,
         name: 'Steve',
       },
-      comments: [
-        { id: '1', text: 'Almost done...' }
-      ],
+      comments: [{ id: '1', text: 'Almost done...' }],
     }
 
     const result = serializer.serialize('todos', data)
@@ -50,9 +48,7 @@ describe('serialize', () => {
             },
           },
           comments: {
-            data: [
-              { type: 'comments', id: '1' }
-            ],
+            data: [{ type: 'comments', id: '1' }],
           },
         },
       },
@@ -68,7 +64,7 @@ describe('serialize', () => {
       owner_type: 'todos',
       owner: {
         id: 1,
-      }
+      },
     }
 
     const result = serializer.serialize('photos', data)
@@ -124,11 +120,11 @@ describe('serialize', () => {
             title: {
               serialize: (val, attrs) => {
                 return `${val}${attrs.description}`
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+        },
+      },
     })
 
     const data = {
@@ -208,7 +204,7 @@ describe('deserialize', () => {
             },
           },
         },
-      }
+      },
     })
     const result = serializer.deserialize(success)
 

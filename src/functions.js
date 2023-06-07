@@ -17,7 +17,12 @@ export function isNumber(n) {
 }
 
 export function isUUID(v) {
-  return isString(v) && v.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i)
+  return (
+    isString(v) &&
+    v.match(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    )
+  )
 }
 
 export function toArray(val) {
@@ -160,7 +165,7 @@ export function getTypeMap(query, schema, data) {
 
   return {
     type,
-    relationships: rels.filter((r, i) => rels.indexOf(r) === i)
+    relationships: rels.filter((r, i) => rels.indexOf(r) === i),
   }
 }
 

@@ -156,7 +156,7 @@ export class ApiClient {
       staleTime = this.config.staleTime,
       headers,
       hydrate,
-      fetch
+      fetch,
     } = config
 
     const query = this.getQuery(queryArg)
@@ -311,7 +311,7 @@ export class ApiClient {
 
     const timestamp = query.timestamp || 0
     const cacheTime = query.cacheTime || 0
-    const expires = timestamp + (cacheTime * 1000)
+    const expires = timestamp + cacheTime * 1000
     const timeout = Math.max(0, expires - new Date().getTime())
 
     if (timeout) {
@@ -367,8 +367,8 @@ export class ApiClient {
       abort = () => controller.abort()
     }
 
-    const fetchFn = options.fetch || this.config.fetch;
-    delete options.fetch;
+    const fetchFn = options.fetch || this.config.fetch
+    delete options.fetch
 
     const promise = fetchFn(uri, options)
       .then(res => {

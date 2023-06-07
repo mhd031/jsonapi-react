@@ -59,9 +59,7 @@ export class Serializer {
       if (!ref.readOnly) {
         if (Array.isArray(val)) {
           rels[field] = {
-            data: val.map(v =>
-              this.parseRelationship(relType, v)
-            ),
+            data: val.map(v => this.parseRelationship(relType, v)),
           }
         } else {
           rels[field] = {
@@ -175,9 +173,10 @@ export class Serializer {
         if (!rel) return
 
         if (Array.isArray(rel)) {
-          rec.attributes[key] = rel.map(r => (
-            data.find(d => d.type === r.type && d.id === r.id)
-          )).filter(Boolean).map(r => r.attributes)
+          rec.attributes[key] = rel
+            .map(r => data.find(d => d.type === r.type && d.id === r.id))
+            .filter(Boolean)
+            .map(r => r.attributes)
         } else {
           const child = data.find(r => r.type === rel.type && r.id === rel.id)
           rec.attributes[key] = child ? child.attributes : null

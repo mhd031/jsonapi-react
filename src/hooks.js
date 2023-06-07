@@ -68,7 +68,9 @@ export function useQuery(queryArg, config) {
 
   React.useEffect(() => {
     mountedRef.current = true
-    return () => { mountedRef.current = null }
+    return () => {
+      mountedRef.current = null
+    }
   }, [])
 
   React.useMemo(() => {
@@ -130,11 +132,7 @@ export function useQuery(queryArg, config) {
     }
   }, [query])
 
-  if (
-    ssr !== false &&
-    client.config.ssrMode &&
-    !query.cache
-  ) {
+  if (ssr !== false && client.config.ssrMode && !query.cache) {
     refetch()
   }
 
@@ -184,7 +182,9 @@ export function useMutation(queryArg, config = {}) {
 
   React.useEffect(() => {
     mountedRef.current = true
-    return () => { mountedRef.current = null }
+    return () => {
+      mountedRef.current = null
+    }
   }, [])
 
   const mutate = async data => {

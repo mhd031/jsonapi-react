@@ -60,15 +60,15 @@ export default {
         readOnly: true,
       },
       url: {
-        resolve: (_, attrs) => `/photos/${attrs.name}`
+        resolve: (_, attrs) => `/photos/${attrs.name}`,
       },
     },
     relationships: {
       owner: {
         getType: attrs => {
           return attrs.owner_type
-        }
-      }
-    }
-  }
+        },
+      },
+    },
+  },
 }
