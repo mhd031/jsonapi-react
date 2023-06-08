@@ -372,9 +372,32 @@ export class ApiClient {
 
     const promise = fetchFn(uri, options)
       .then(res => {
-        return res.status === 204 ? {} : res.json()
+        console.error('FetchFn Response')
+        console.error(res)
+
+        return res.status === 204 ? {} : res
+
+
+        // return res.status === 204 ? {} : res.json()
       })
-      .catch(error => error)
+      .catch(error => {
+        console.log('Error processing your response')
+        console.log(error)
+
+        return error
+        }
+        // {
+
+
+        // return {
+        //   error: {
+        //     status: String(error.code || 500),
+        //     title: error.message,
+        //     name: error.name,
+        //   },
+        // }
+      // }
+      )
 
     if (abort) {
       promise.abort = abort
