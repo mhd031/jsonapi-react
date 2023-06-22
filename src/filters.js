@@ -1,4 +1,16 @@
 
+class PropertyAccessRecorder {
+    attribute = '';
+    entity() {
+        return new Proxy({}, {
+            __parent:this,
+            get: function (target, prop, receiver) {
+                this.__parent.attribute = prop;
+                return null;
+            }
+        })
+    }
+}
 export default class JsonApiDotNetFilter {
     constructor(op, terms) {
         this.op = op;
@@ -8,21 +20,21 @@ export default class JsonApiDotNetFilter {
         return this.__getParts().join('');
     }
 
-    __getParts(){
+    __getParts() {
         let parts = [this.op];
         let i = 0;
         parts.push('(');
         for (let term of this.terms) {
             if (i > 0) {
                 parts.push(',');
-            }            
+            }
             parts.push(...this.__quoteParts(term));
             i++;
         }
         parts.push(')');
         return parts;
     }
-    __quoteParts(value){
+    __quoteParts(value) {
         if (value instanceof JsonApiDotNetFilter) {
             return value.__getParts();
         }
@@ -43,29 +55,36 @@ export default class JsonApiDotNetFilter {
     static contains(lhs, rhs) { return new JsonApiDotNetFilter('contains', [lhs, rhs]); }
     static startsWith(lhs, rhs) { return new JsonApiDotNetFilter('startsWith', [lhs, rhs]); }
     static endsWith(lhs, rhs) { return new JsonApiDotNetFilter('endsWith', [lhs, rhs]); }
-    static attr(attribute) { return new AttributeFilter(attribute); }
-    static or(lhs, rhs) { 
-        if(terms.length < 2){
-            throw new RangeError("terms must have 2 or more terms");
+    static attr(attribute) { 
+        if(attribute.constructor.name === "String"){
+            return new AttributeFilter(attribute); 
         }
-        else if(terms.length === 2){
-            return new JsonApiDotNetFilter('or', terms); 
-        }
-        else{
-            return JsonApiDotNetFilter.or(terms[0], JsonApiDotNetFilter.or(...terms.slice(1)));
-        }    
+        const recorder = new PropertyAccessRecorder();
+        attribute(recorder.entity());
+        return new AttributeFilter(recorder.attribute);
     }
-    static and(...terms) { 
-        if(terms.length < 2){
+    static or(lhs, rhs) {
+        if (terms.length < 2) {
             throw new RangeError("terms must have 2 or more terms");
         }
-        else if(terms.length === 2){
-            return new JsonApiDotNetFilter('and', terms); 
+        else if (terms.length === 2) {
+            return new JsonApiDotNetFilter('or', terms);
         }
-        else{
+        else {
+            return JsonApiDotNetFilter.or(terms[0], JsonApiDotNetFilter.or(...terms.slice(1)));
+        }
+    }
+    static and(...terms) {
+        if (terms.length < 2) {
+            throw new RangeError("terms must have 2 or more terms");
+        }
+        else if (terms.length === 2) {
+            return new JsonApiDotNetFilter('and', terms);
+        }
+        else {
             return JsonApiDotNetFilter.and(terms[0], JsonApiDotNetFilter.and(...terms.slice(1)));
         }
-        
+
     }
     static any(operand, inList) { return new JsonApiDotNetFilter('any', [operand, ...inList]); }
     static not(term) { return new JsonApiDotNetFilter('not', [term]); }
@@ -82,7 +101,7 @@ export default class JsonApiDotNetFilter {
         }
         return new JsonApiDotNetFilter('has', terms);
     }
-    static id(){
+    static id() {
         return JsonApiDotNetFilter.attr('Id');
     }
 
@@ -93,7 +112,7 @@ class AttributeFilter extends JsonApiDotNetFilter {
         super('', []);
         this.attributeName = attributeName;
     }
-    __getParts(){
+    __getParts() {
         return [this.attributeName];
     }
 }

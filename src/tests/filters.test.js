@@ -4,6 +4,10 @@ test('Attribute Name is unquoted', () => {
     const attr = JsonApiDotNetFilter.attr('expected');
     expect(attr.toString()).toEqual('expected');    
 })
+test('Attribute accepts call syntax', () => {
+    const attr = JsonApiDotNetFilter.attr(x=>x.expected);
+    expect(attr.toString()).toEqual('expected');    
+})
 
 test('Filters quote string values',()=>{
     const foo = JsonApiDotNetFilter.equals(JsonApiDotNetFilter.attr('attr'), 'value');
