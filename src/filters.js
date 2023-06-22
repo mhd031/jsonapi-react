@@ -44,8 +44,29 @@ export default class Filter {
     static startsWith(lhs, rhs) { return new Filter('startsWith', [lhs, rhs]); }
     static endsWith(lhs, rhs) { return new Filter('endsWith', [lhs, rhs]); }
     static attr(attribute) { return new AttributeFilter(attribute); }
-    static or(lhs, rhs) { return new Filter('or', [lhs, rhs]); }
-    static and(lhs, rhs) { return new Filter('and', [lhs, rhs]); }
+    static or(lhs, rhs) { 
+        if(terms.length < 2){
+            throw new RangeError("terms must have 2 or more terms");
+        }
+        else if(terms.length === 2){
+            return new Filter('or', terms); 
+        }
+        else{
+            return Filter.or(terms[0], Filter.or(...terms.slice(1)));
+        }    
+    }
+    static and(...terms) { 
+        if(terms.length < 2){
+            throw new RangeError("terms must have 2 or more terms");
+        }
+        else if(terms.length === 2){
+            return new Filter('and', terms); 
+        }
+        else{
+            return Filter.and(terms[0], Filter.and(...terms.slice(1)));
+        }
+        
+    }
     static any(operand, inList) { return new Filter('any', [operand, ...inList]); }
     static not(term) { return new Filter('not', [term]); }
     static has(rel, filter) {

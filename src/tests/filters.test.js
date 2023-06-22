@@ -23,5 +23,13 @@ test('Filters escape inner quotes',()=>{
     const foo = Filter.equals(Filter.attr('attr'), '\'value');
     expect(foo.toString()).toEqual('equals(attr,\'\'\'value\')');
 })
+test('can pass 3 terms to and',()=>{
+    const foo = Filter.and(
+        Filter.equals('a','a'),
+        Filter.equals('b','b'),
+        Filter.equals('c','c'),
+    ); 
+    expect(foo.toString()).toEqual("and(equals('a','a'),and(equals('b','b'),equals('c','c')))");
+})
 
 
