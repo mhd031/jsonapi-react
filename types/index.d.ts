@@ -106,4 +106,31 @@ declare module '@mhd031/jsonapi-react' {
       ssr?: boolean
     }
   ): IResult<TData>
+
+  type filterParameter = JsonApiDotNetFilter | string | boolean | number | null | Date
+
+  export default class JsonApiDotNetFilter {
+    protected constructor(op, terms);
+    toString(): string;
+
+    protected __getParts(): string[];
+    private __quoteParts(value: filterParameter);
+
+    static equals(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
+    static lessThan(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
+    static lessOrEqual(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
+    static greaterThan(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
+    static greaterOrEqual(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
+    static contains(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
+    static startsWith(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
+    static endsWith(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
+    static attr<TEntity>(attribute: string | ((e: TEntity) => any)): JsonApiDotNetFilter;
+    static or(...terms: JsonApiDotNetFilter[]): JsonApiDotNetFilter;
+    static and(...terms: JsonApiDotNetFilter[]): JsonApiDotNetFilter;
+    static any(operand: filterParameter, inList: filterParameter[]): JsonApiDotNetFilter;
+    static not(term: JsonApiDotNetFilter): JsonApiDotNetFilter;
+    static has(rel: JsonApiDotNetFilter, filter?: JsonApiDotNetFilter): JsonApiDotNetFilter;
+    static id(): JsonApiDotNetFilter;
+
+  }
 }
