@@ -1,5 +1,5 @@
 
-export default class Filter {
+export default class JsonApiDotNetFilter {
     constructor(op, terms) {
         this.op = op;
         this.terms = terms;
@@ -23,7 +23,7 @@ export default class Filter {
         return parts;
     }
     __quoteParts(value){
-        if (value instanceof Filter) {
+        if (value instanceof JsonApiDotNetFilter) {
             return value.__getParts();
         }
         if (value === null || value === undefined) { return ['null']; };
@@ -35,24 +35,24 @@ export default class Filter {
         return ['\'' + value + '\''];
     }
 
-    static equals(lhs, rhs) { return new Filter('equals', [lhs, rhs]); }
-    static lessThan(lhs, rhs) { return new Filter('lessThan', [lhs, rhs]); }
-    static lessOrEqual(lhs, rhs) { return new Filter('lessOrEqual', [lhs, rhs]); }
-    static greaterThan(lhs, rhs) { return new Filter('greaterThan', [lhs, rhs]); }
-    static greaterOrEqual(lhs, rhs) { return new Filter('greaterOrEqual', [lhs, rhs]); }
-    static contains(lhs, rhs) { return new Filter('contains', [lhs, rhs]); }
-    static startsWith(lhs, rhs) { return new Filter('startsWith', [lhs, rhs]); }
-    static endsWith(lhs, rhs) { return new Filter('endsWith', [lhs, rhs]); }
+    static equals(lhs, rhs) { return new JsonApiDotNetFilter('equals', [lhs, rhs]); }
+    static lessThan(lhs, rhs) { return new JsonApiDotNetFilter('lessThan', [lhs, rhs]); }
+    static lessOrEqual(lhs, rhs) { return new JsonApiDotNetFilter('lessOrEqual', [lhs, rhs]); }
+    static greaterThan(lhs, rhs) { return new JsonApiDotNetFilter('greaterThan', [lhs, rhs]); }
+    static greaterOrEqual(lhs, rhs) { return new JsonApiDotNetFilter('greaterOrEqual', [lhs, rhs]); }
+    static contains(lhs, rhs) { return new JsonApiDotNetFilter('contains', [lhs, rhs]); }
+    static startsWith(lhs, rhs) { return new JsonApiDotNetFilter('startsWith', [lhs, rhs]); }
+    static endsWith(lhs, rhs) { return new JsonApiDotNetFilter('endsWith', [lhs, rhs]); }
     static attr(attribute) { return new AttributeFilter(attribute); }
     static or(lhs, rhs) { 
         if(terms.length < 2){
             throw new RangeError("terms must have 2 or more terms");
         }
         else if(terms.length === 2){
-            return new Filter('or', terms); 
+            return new JsonApiDotNetFilter('or', terms); 
         }
         else{
-            return Filter.or(terms[0], Filter.or(...terms.slice(1)));
+            return JsonApiDotNetFilter.or(terms[0], JsonApiDotNetFilter.or(...terms.slice(1)));
         }    
     }
     static and(...terms) { 
@@ -60,35 +60,35 @@ export default class Filter {
             throw new RangeError("terms must have 2 or more terms");
         }
         else if(terms.length === 2){
-            return new Filter('and', terms); 
+            return new JsonApiDotNetFilter('and', terms); 
         }
         else{
-            return Filter.and(terms[0], Filter.and(...terms.slice(1)));
+            return JsonApiDotNetFilter.and(terms[0], JsonApiDotNetFilter.and(...terms.slice(1)));
         }
         
     }
-    static any(operand, inList) { return new Filter('any', [operand, ...inList]); }
-    static not(term) { return new Filter('not', [term]); }
+    static any(operand, inList) { return new JsonApiDotNetFilter('any', [operand, ...inList]); }
+    static not(term) { return new JsonApiDotNetFilter('not', [term]); }
     static has(rel, filter) {
         if (!(rel instanceof AttributeFilter)) {
             throw new TypeError('the relationship parameter must be an attribute');
         }
         const terms = [rel];
         if (filter) {
-            if (!(filter instanceof Filter)) {
+            if (!(filter instanceof JsonApiDotNetFilter)) {
                 throw new TypeError('the filter parameter must be a filter');
             }
             terms.push(filter);
         }
-        return new Filter('has', terms);
+        return new JsonApiDotNetFilter('has', terms);
     }
     static id(){
-        return Filter.attr('Id');
+        return JsonApiDotNetFilter.attr('Id');
     }
 
 }
 
-class AttributeFilter extends Filter {
+class AttributeFilter extends JsonApiDotNetFilter {
     constructor(attributeName) {
         super('', []);
         this.attributeName = attributeName;
