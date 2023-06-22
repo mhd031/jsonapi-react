@@ -3,7 +3,7 @@ class PropertyAccessRecorder {
     attribute = '';
     entity() {
         return new Proxy({}, {
-            __parent:this,
+            __parent: this,
             get: function (target, prop, receiver) {
                 this.__parent.attribute = prop;
                 return null;
@@ -55,9 +55,9 @@ export default class JsonApiDotNetFilter {
     static contains(lhs, rhs) { return new JsonApiDotNetFilter('contains', [lhs, rhs]); }
     static startsWith(lhs, rhs) { return new JsonApiDotNetFilter('startsWith', [lhs, rhs]); }
     static endsWith(lhs, rhs) { return new JsonApiDotNetFilter('endsWith', [lhs, rhs]); }
-    static attr(attribute) { 
-        if(attribute.constructor.name === "String"){
-            return new AttributeFilter(attribute); 
+    static attr(attribute) {
+        if (attribute.constructor.name === "String") {
+            return new AttributeFilter(attribute);
         }
         const recorder = new PropertyAccessRecorder();
         attribute(recorder.entity());
