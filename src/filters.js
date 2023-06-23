@@ -1,17 +1,7 @@
 
-class PropertyAccessRecorder {
-    attribute = '';
-    entity() {
-        return new Proxy({}, {
-            __parent: this,
-            get: function (target, prop, receiver) {
-                this.__parent.attribute = prop;
-                return null;
-            }
-        })
-    }
-}
-export default class JsonApiDotNetFilter {
+import { PropertyAccessRecorder } from "./functions";
+function isWhenThenOtherwise(x) { return x && x.constructor.name === "Object" && (x.when !== undefined && (x.then !== undefined || x.otherwise !== undefined)); }
+export class JsonApiDotNetFilter {
     constructor(op, terms) {
         this.op = op;
         this.terms = terms;
@@ -38,7 +28,8 @@ export default class JsonApiDotNetFilter {
         if (value instanceof JsonApiDotNetFilter) {
             return value.__getParts();
         }
-        if (value === null || value === undefined) { return ['null']; };
+        if (value === null) { return ['null']; };
+        if (value === undefined) { return []; }
         if (value instanceof Date) {
             value = value.toISOString();
         }
@@ -57,39 +48,87 @@ export default class JsonApiDotNetFilter {
     static endsWith(lhs, rhs) { return new JsonApiDotNetFilter('endsWith', [lhs, rhs]); }
     static attr(attribute) {
         if (attribute.constructor.name === "String") {
-            return new AttributeFilter(attribute);
+            return new JsonApiDotNetAttributeFilter(attribute);
         }
         const recorder = new PropertyAccessRecorder();
         attribute(recorder.entity());
-        return new AttributeFilter(recorder.attribute);
+        return new JsonApiDotNetAttributeFilter(recorder.attribute);
     }
-    static or(lhs, rhs) {
-        if (terms.length < 2) {
-            throw new RangeError("terms must have 2 or more terms");
-        }
-        else if (terms.length === 2) {
-            return new JsonApiDotNetFilter('or', terms);
+    static or(...terms) {
+        const isWhenThen = terms.some(t => isWhenThenOtherwise(t));
+        if (isWhenThen) {
+            terms = terms.map(t => {
+                if (!t) { return undefined; }
+                if (t instanceof JsonApiDotNetFilter) { return t; }
+                if (t.when) {
+                    return t.then;
+                }
+                else {
+                    return t.otherwise;
+                }
+            }).filter(x => x !== undefined);
+            if (terms.length === 0) {
+                return JsonApiDotNetFilter.equals('1', '1');
+            }
+            if (terms.length === 1) {
+                return terms[0];
+            }
+            return JsonApiDotNetFilter.or(...terms);
         }
         else {
-            return JsonApiDotNetFilter.or(terms[0], JsonApiDotNetFilter.or(...terms.slice(1)));
+            if (terms.length < 2) {
+                throw new RangeError("terms must have 2 or more terms");
+            }
+            else if (terms.length === 2) {
+                return new JsonApiDotNetFilter('or', terms);
+            }
+            else {
+                return JsonApiDotNetFilter.or(terms[0], JsonApiDotNetFilter.or(...terms.slice(1)));
+            }
         }
     }
     static and(...terms) {
-        if (terms.length < 2) {
-            throw new RangeError("terms must have 2 or more terms");
-        }
-        else if (terms.length === 2) {
-            return new JsonApiDotNetFilter('and', terms);
+        const isWhenThen = terms.some(t => isWhenThenOtherwise(t));
+        if (isWhenThen) {
+            terms = terms.map(t => {
+                if (!t) { return undefined; }
+                if (t instanceof JsonApiDotNetFilter) { return t; }
+                if (t.when) {
+                    return t.then;
+                }
+                else {
+                    return t.otherwise;
+                }
+            }).filter(x => x !== undefined);
+            if (terms.length === 0) {
+                return JsonApiDotNetFilter.equals('1', '1');
+            }
+            if (terms.length === 1) {
+                return terms[0];
+            }
+            return JsonApiDotNetFilter.and(...terms);
         }
         else {
-            return JsonApiDotNetFilter.and(terms[0], JsonApiDotNetFilter.and(...terms.slice(1)));
+            if (terms.length < 2) {
+                throw new RangeError("terms must have 2 or more terms");
+            }
+            else if (terms.length === 2) {
+                return new JsonApiDotNetFilter('and', terms);
+            }
+            else {
+                return JsonApiDotNetFilter.and(terms[0], JsonApiDotNetFilter.and(...terms.slice(1)));
+            }
         }
 
     }
-    static any(operand, inList) { return new JsonApiDotNetFilter('any', [operand, ...inList]); }
+
+
+    static any(operand, inList) {
+        return new JsonApiDotNetFilter('any', [operand, ...(inList || [])]);
+    }
     static not(term) { return new JsonApiDotNetFilter('not', [term]); }
     static has(rel, filter) {
-        if (!(rel instanceof AttributeFilter)) {
+        if (!(rel instanceof JsonApiDotNetAttributeFilter)) {
             throw new TypeError('the relationship parameter must be an attribute');
         }
         const terms = [rel];
@@ -102,12 +141,12 @@ export default class JsonApiDotNetFilter {
         return new JsonApiDotNetFilter('has', terms);
     }
     static id() {
-        return JsonApiDotNetFilter.attr('Id');
+        return JsonApiDotNetFilter.attr('id');
     }
 
 }
 
-class AttributeFilter extends JsonApiDotNetFilter {
+class JsonApiDotNetAttributeFilter extends JsonApiDotNetFilter {
     constructor(attributeName) {
         super('', []);
         this.attributeName = attributeName;

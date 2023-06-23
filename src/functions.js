@@ -201,3 +201,18 @@ export function coerceValue(val, type) {
       return val
   }
 }
+// todo make this support nexted expressions by returing a nested proxy that sets parent property with dot notation
+export class PropertyAccessRecorder {
+  attribute = '';
+  entity() {
+      return new Proxy({}, {
+          __parent: this,
+          __propStack: [],
+          __pushName(name){ this.__propStack.push(name); return this.__propStack.join('.');},
+          get: function (target, prop, receiver) {
+              this.__parent.attribute = this.__pushName(prop);
+              return null;
+          }
+      })
+  }
+};

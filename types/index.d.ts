@@ -107,10 +107,11 @@ declare module '@mhd031/jsonapi-react' {
     }
   ): IResult<TData>
 
-  type filterParameter = JsonApiDotNetFilter | string | boolean | number | null | Date
+  type filterParameter = JsonApiDotNetFilter | string | boolean | number | null | Date | undefined;
+  type whenThenOtherwise = { when: boolean, then?: JsonApiDotNetFilter, otherwise?: JsonApiDotNetFilter };
 
-  export default class JsonApiDotNetFilter {
-    protected constructor(op, terms);
+  export class JsonApiDotNetFilter {
+    protected constructor(op: string, terms: filterParameter[]);
     toString(): string;
 
     protected __getParts(): string[];
@@ -125,12 +126,20 @@ declare module '@mhd031/jsonapi-react' {
     static startsWith(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
     static endsWith(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
     static attr<TEntity>(attribute: string | ((e: TEntity) => any)): JsonApiDotNetFilter;
-    static or(...terms: JsonApiDotNetFilter[]): JsonApiDotNetFilter;
-    static and(...terms: JsonApiDotNetFilter[]): JsonApiDotNetFilter;
-    static any(operand: filterParameter, inList: filterParameter[]): JsonApiDotNetFilter;
+    static or(...terms: (JsonApiDotNetFilter|whenThenOtherwise)[]): JsonApiDotNetFilter;
+    static and(...terms: (JsonApiDotNetFilter|whenThenOtherwise)[]): JsonApiDotNetFilter;
+    static any(operand: filterParameter, inList: filterParameter[] | undefined): JsonApiDotNetFilter;
     static not(term: JsonApiDotNetFilter): JsonApiDotNetFilter;
     static has(rel: JsonApiDotNetFilter, filter?: JsonApiDotNetFilter): JsonApiDotNetFilter;
     static id(): JsonApiDotNetFilter;
 
+
+  }
+
+  type sortDirection = '' | '-';
+  export class Sort {
+    static Asc: sortDirection;
+    static Desc: sortDirection;
+    static by<TEntity>(attribute: string | ((e: TEntity) => any), dir?: sortDirection): string;
   }
 }
