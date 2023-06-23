@@ -132,14 +132,5 @@ declare module '@mhd031/jsonapi-react' {
     static not(term: JsonApiDotNetFilter): JsonApiDotNetFilter;
     static has(rel: JsonApiDotNetFilter, filter?: JsonApiDotNetFilter): JsonApiDotNetFilter;
     static id(): JsonApiDotNetFilter;
-
-
-  }
-
-  type sortDirection = '' | '-';
-  export class Sort {
-    static Asc: sortDirection;
-    static Desc: sortDirection;
-    static by<TEntity>(attribute: string | ((e: TEntity) => any), dir?: sortDirection): string;
   }
 }

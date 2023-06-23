@@ -1,5 +1,4 @@
 export { JsonApiDotNetFilter } from './filters'
-export { Sort } from './sort'
 export { ApiProvider } from './context'
 export { ApiClient } from './client'
 export { useQuery, useMutation, useClient, useIsFetching } from './hooks'
