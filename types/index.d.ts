@@ -126,8 +126,8 @@ declare module '@mhd031/jsonapi-react' {
     static startsWith(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
     static endsWith(lhs: filterParameter, rhs: filterParameter): JsonApiDotNetFilter;
     static attr<TEntity>(attribute: string | ((e: TEntity) => any)): JsonApiDotNetFilter;
-    static or(...terms: (JsonApiDotNetFilter|whenThenOtherwise)[]): JsonApiDotNetFilter;
-    static and(...terms: (JsonApiDotNetFilter|whenThenOtherwise)[]): JsonApiDotNetFilter;
+    static or(...terms: (JsonApiDotNetFilter | whenThenOtherwise)[]): JsonApiDotNetFilter;
+    static and(...terms: (JsonApiDotNetFilter | whenThenOtherwise)[]): JsonApiDotNetFilter;
     static any(operand: filterParameter, inList: filterParameter[] | undefined): JsonApiDotNetFilter;
     static not(term: JsonApiDotNetFilter): JsonApiDotNetFilter;
     static has(rel: JsonApiDotNetFilter, filter?: JsonApiDotNetFilter): JsonApiDotNetFilter;
