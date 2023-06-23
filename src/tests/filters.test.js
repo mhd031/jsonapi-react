@@ -46,3 +46,13 @@ test('can pass conditional terms to and', () => {
     expect(foo.toString()).toEqual("and(equals('1','1'),and(equals('b','b'),and(equals('c','c'),equals('e','f'))))");
 })
 
+test('can pass conditional terms using functions to and', () => {
+    const foo = JsonApiDotNetFilter.and(
+        JsonApiDotNetFilter.equals(1, 1),
+        { when: ()=>true, then: ()=>JsonApiDotNetFilter.equals('b', 'b') },
+        { when: ()=>false, otherwise: ()=>JsonApiDotNetFilter.equals('c', 'c') },
+        JsonApiDotNetFilter.equals('e', 'f')
+    );
+    expect(foo.toString()).toEqual("and(equals('1','1'),and(equals('b','b'),and(equals('c','c'),equals('e','f'))))");
+})
+

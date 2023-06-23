@@ -1,6 +1,16 @@
 
 import { PropertyAccessRecorder } from "./functions";
 function isWhenThenOtherwise(x) { return x && x.constructor.name === "Object" && (x.when !== undefined && (x.then !== undefined || x.otherwise !== undefined)); }
+function unpackWhenThenOtherwise(terms) {
+    return terms.map(t => {
+        if (!t) { return undefined; }
+        if (t instanceof JsonApiDotNetFilter) { return t; }
+        const condition = t.when !== undefined && t.when.constructor.name === 'Function' ? (() => t.when()) : (() => t.when);
+        const then = t.then !== undefined && t.then.constructor.name === 'Function' ? (() => t.then()) : (() => t.then);
+        const otherwise = t.otherwise !== undefined && t.otherwise.constructor.name === 'Function' ? (() => t.otherwise()) : (() => t.otherwise);
+        return condition() ? then() : otherwise();
+    }).filter(x => x !== undefined);
+}
 export class JsonApiDotNetFilter {
     constructor(op, terms) {
         this.op = op;
@@ -57,16 +67,7 @@ export class JsonApiDotNetFilter {
     static or(...terms) {
         const isWhenThen = terms.some(t => isWhenThenOtherwise(t));
         if (isWhenThen) {
-            terms = terms.map(t => {
-                if (!t) { return undefined; }
-                if (t instanceof JsonApiDotNetFilter) { return t; }
-                if (t.when) {
-                    return t.then;
-                }
-                else {
-                    return t.otherwise;
-                }
-            }).filter(x => x !== undefined);
+            terms = unpackWhenThenOtherwise(terms);
             if (terms.length === 0) {
                 return JsonApiDotNetFilter.equals('1', '1');
             }
@@ -90,16 +91,7 @@ export class JsonApiDotNetFilter {
     static and(...terms) {
         const isWhenThen = terms.some(t => isWhenThenOtherwise(t));
         if (isWhenThen) {
-            terms = terms.map(t => {
-                if (!t) { return undefined; }
-                if (t instanceof JsonApiDotNetFilter) { return t; }
-                if (t.when) {
-                    return t.then;
-                }
-                else {
-                    return t.otherwise;
-                }
-            }).filter(x => x !== undefined);
+            terms = unpackWhenThenOtherwise(terms);
             if (terms.length === 0) {
                 return JsonApiDotNetFilter.equals('1', '1');
             }
