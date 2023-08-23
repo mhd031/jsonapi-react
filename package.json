@@ -1,6 +1,6 @@
 {
   "name": "@mhd031/jsonapi-react",
-  "version": "0.0.39",
+  "version": "0.0.40",
   "description": "A minimal JSON:API client and React hooks for fetching, updating, and caching remote data.",
   "author": "mhd031",
   "license": "MIT",
