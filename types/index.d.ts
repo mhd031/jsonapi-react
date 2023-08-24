@@ -37,6 +37,7 @@ declare module '@mhd031/jsonapi-react' {
     fetch?: (url: string, options: {}) => Promise<{}>
     stringify?: <TQueryParams = any>(q: TQueryParams) => string
     fetchOptions?: {}
+    body?: string
   }
 
   export class ApiClient {
