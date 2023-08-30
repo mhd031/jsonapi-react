@@ -157,6 +157,7 @@ export class ApiClient {
       headers,
       hydrate,
       fetch,
+      body
     } = config
 
     const query = this.getQuery(queryArg)
@@ -191,7 +192,7 @@ export class ApiClient {
       isFetching: true,
     })
 
-    const request = this.request(query.url, { headers, fetch })
+    const request = this.request(query.url, { headers, fetch, body })
 
     query.promise = (async () => {
       query.cache = await request
