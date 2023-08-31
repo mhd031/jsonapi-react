@@ -359,6 +359,9 @@ export class ApiClient {
         ...this.config.headers,
         ...headers,
       },
+      body: {
+        ...this.config.body
+      }
     }
 
     let abort
